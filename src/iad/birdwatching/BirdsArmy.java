@@ -1,32 +1,27 @@
 package iad.birdwatching;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public class BirdsArmy implements Iterable<Bird> {
-    private List<Bird> birds = new ArrayList<Bird>();
 
-	public boolean areAllBirdsPlacedWithinField(final GridSize gridSize) {
-        return birds.size() > 0 && Iterables.all(birds,new Predicate<Bird>() {
-            public boolean apply(Bird bird) {
-                return gridSize.isWithinGrid(bird.getLocation());
-            }
-        });
+    private final List<Bird> birds = new ArrayList<>();
 
-	}
+    /** Tutti gli uccelli si trovano dentro il campo di gioco? */
+    public boolean areAllBirdsPlacedWithinField(final GridSize gridSize) {
+        return !birds.isEmpty() &&
+               birds.stream()
+                    .allMatch(bird -> gridSize.isWithinGrid(bird.getLocation()));
+    }
 
-	public boolean anyBirdWasHit(final Location shotLocation) {
-        return Iterables.any(birds,new Predicate<Bird>() {
-            public boolean apply(Bird bird) {
-                return bird.wasHit(shotLocation);
-            }
-        });
-	}
+    /** Almeno un uccello è stato colpito da questo sparo? */
+    public boolean anyBirdWasHit(final Location shotLocation) {
+        return birds.stream()
+                    .anyMatch(bird -> bird.wasHit(shotLocation));
+    }
 
+    @Override
     public Iterator<Bird> iterator() {
         return birds.iterator();
     }
